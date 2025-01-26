@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { ERROR_CODES, ERROR_MESSAGES } from '../../constants/errorMessages';
-import { sendErrorResponse } from '../../utils/errorHandler';
+import { ERROR_CODES, ERROR_MESSAGES } from '../constants/errorMessages';
+import { sendErrorResponse } from '../utils/errorHandler';
 import {
   getAllFileStorages,
   getFileStorageById,

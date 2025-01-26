@@ -7,10 +7,10 @@ import {
   deleteKBClient,
 } from '../services/kbClientService';
 import { KBClientSubmitModel } from '../models/submitModel/kbClientSubmitModel';
-import { sendErrorResponse } from '../../utils/errorHandler';
-import { ERROR_CODES, ERROR_MESSAGES } from '../../constants/errorMessages';
+import { sendErrorResponse } from '../utils/errorHandler';
+import { ERROR_CODES, ERROR_MESSAGES } from '../constants/errorMessages';
 import { KBCLientEntity } from '../models/entity/kbClienEntity';
-import { uploadFileToS3 } from '../../utils/fileUpload';
+import { uploadFileToS3 } from '../utils/fileUpload';
 import { FileStorageEntity } from '../models/entity/fileStorageEntity';
 import { createFileStorage } from '../services/fileStorageService';
 const formidable = require('formidable');
