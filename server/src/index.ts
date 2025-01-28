@@ -4,14 +4,18 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 /* ROUTE IMPORTS */
 import kbClientRoutes from './routes/kbClientRoutes';
 import fileStorageRoutes from './routes/fileStorageRoutes';
+import authRoutes from './routes/authRoutes';
+import { authorizeRole } from './middleware/authorizeRole';
 
 /* CONFIGURATIONS */
 dotenv.config();
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 app.use(morgan('common'));
@@ -20,8 +24,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 /* ROUTES */
-app.use('/clients', kbClientRoutes); // http://localhost:3001/clients
-app.use('/files', fileStorageRoutes); // http://localhost:3001/files
+app.use('/api/auth', authRoutes);
+app.use('/api/clients', authorizeRole(['admin']), kbClientRoutes); // http://localhost:3001/api/clients
+app.use('/api/files', authorizeRole(['admin']), fileStorageRoutes); // http://localhost:3001/api/files
 
 /* SERVER */
 const port = Number(process.env.PORT) || 3001;

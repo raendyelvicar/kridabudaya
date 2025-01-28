@@ -49,6 +49,28 @@ enum RoleMember {
   partner
 }
 
+model User {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  password      String
+  role_id       Int
+  role          Role     @relation(fields: [role_id], references: [id])
+  refresh_token String?
+  last_login    DateTime @default(now())
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt // Automatically updates on modification
+
+  @@map("users")
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
+
+  @@map("roles")
+}
+
 // Content model for storing dynamic landing page content
 model Content {
   id           Int      @id @default(autoincrement()) // Primary key
@@ -75,7 +97,7 @@ model ContentMapping {
 model Service {
   id             Int      @id @default(autoincrement()) // Primary key
   name           String // Service name
-  description    String // Service description
+  description    String? // Service description
   service_fileid String? //Service file
   created_at     DateTime @default(now()) // Timestamp for creation
   updated_at     DateTime @updatedAt // Automatically updates on modification
@@ -151,13 +173,13 @@ model KBClient {
 }
 
 model GalleryItem {
-  id           Int       @id @default(autoincrement()) // Primary key
+  id           Int      @id @default(autoincrement()) // Primary key
   title        String // Gallery item title
   description  String? // Description of the gallery item
-  media_type   MediaType // Media type (image, video, etc.)
+  media_type   String? // Media type (image, video, etc.)
   media_fileid String? // Foreign key to File model
-  created_at   DateTime  @default(now()) // Timestamp for creation
-  updated_at   DateTime  @updatedAt // Automatically updates on modification
+  created_at   DateTime @default(now()) // Timestamp for creation
+  updated_at   DateTime @updatedAt // Automatically updates on modification
 
   media FileStorage? @relation(fields: [media_fileid], references: [fileid])
 

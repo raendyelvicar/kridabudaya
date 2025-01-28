@@ -14,7 +14,7 @@ const s3 = new S3({
 // Function to generate a new file name with current date and random string
 export const generateFileName = (originalName: string): string => {
   const date = moment().format('DDMMYYYY'); // Format date as ddMMyyyy
-  const randomString = crypto.randomBytes(6).toString('hex'); // Generate random string
+  const randomString = crypto.randomBytes(24).toString('hex'); // Generate random string
   const extension = originalName.split('.').pop(); // Get file extension
   return `${date}_${randomString}.${extension}`;
 };
