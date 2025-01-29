@@ -64,9 +64,10 @@ model User {
 }
 
 model Role {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  users User[]
+  id                Int              @id @default(autoincrement())
+  name              String           @unique
+  users             User[]
+  team_member_roles TeamMemberRole[]
 
   @@map("roles")
 }
@@ -133,9 +134,10 @@ model FileStorage {
   clients          KBClient[] // Linked to Client (logo)
   gallery_items    GalleryItem[] // Linked to GalleryItem
   portfolio_assets PortfolioAsset[] // Linked to PortfolioAsset
-  Banner           Banner[] // Linked to Banner (image)
-  Testimonial      Testimonial[] // Linked to Testimonial (profile picture)
-  Service          Service[] // Linked to Service (logo)
+  banners          Banner[] // Linked to Banner (image)
+  testimonials     Testimonial[] // Linked to Testimonial (profile picture)
+  services         Service[] // Linked to Service (logo)
+  social_medias    SocialMedia[]
 
   @@map("file_storages")
 }
@@ -143,7 +145,6 @@ model FileStorage {
 model TeamMember {
   id                     Int      @id @default(autoincrement()) // Primary key
   name                   String // Team member's name
-  role                   String? // Team member's role/title
   social_media_url       String? // Social media link
   phone_number           String? // Phone number
   bio                    String? // Bio of the team member
@@ -151,9 +152,21 @@ model TeamMember {
   created_at             DateTime @default(now()) // Timestamp for creation
   updated_at             DateTime @updatedAt // Automatically updates on modification
 
-  profile_picture FileStorage? @relation(fields: [profile_picture_fileid], references: [fileid])
+  profile_picture  FileStorage?     @relation(fields: [profile_picture_fileid], references: [fileid])
+  team_member_role TeamMemberRole[]
 
   @@map("team_members")
+}
+
+model TeamMemberRole {
+  team_memberid Int
+  role_id       Int
+
+  team_member TeamMember? @relation(fields: [team_memberid], references: [id])
+  role        Role?       @relation(fields: [role_id], references: [id])
+
+  @@id([team_memberid, role_id])
+  @@map("team_member_roles")
 }
 
 model KBClient {
@@ -237,19 +250,32 @@ model Portfolio {
   synopsis       String? // Brief description of the portfolio
   choreographer  String? // Choreographer name
   music_director String? // Music director name
-  province_id    Int // Foreign key to Province model
+  province_id    Int? // Foreign key to Province model
 
-  province        Province?        @relation(fields: [province_id], references: [id])
-  portfolio_asset PortfolioAsset[]
+  province         Province?        @relation(fields: [province_id], references: [id])
+  portfolio_assets PortfolioAsset[]
 
   @@map("portfolios")
 }
 
 model Province {
-  id         Int         @unique
+  id         Int         @id @default(autoincrement())
   name       String
   state      String
   portfolios Portfolio[]
 
   @@map("provinces")
+}
+
+model SocialMedia {
+  id          Int      @id @default(autoincrement())
+  name        String
+  url         String
+  logo_fileid String?
+  created_at  DateTime @default(now()) // Timestamp for creation
+  updated_at  DateTime @updatedAt // Automatically updates on modification
+
+  logo FileStorage? @relation(fields: [logo_fileid], references: [fileid])
+
+  @@map("social_media")
 }

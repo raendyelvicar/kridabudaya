@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { KBClientSubmitModel } from '../models/submitModel/kbClientSubmitModel';
-import { KBCLientEntity } from '../models/entity/kbClienEntity';
+import { KBClientEntity } from '../models/entity/kbClienEntity';
 
 const prisma = new PrismaClient();
 
@@ -20,7 +20,7 @@ export const getKBClientById = async (id: number) => {
   });
 };
 
-export const createKBClient = async (data: KBCLientEntity) => {
+export const createKBClient = async (data: KBClientEntity) => {
   return await prisma.kBClient.create({ data });
 };
 

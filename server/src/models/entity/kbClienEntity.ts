@@ -1,4 +1,4 @@
-export interface KBCLientEntity {
+export interface KBClientEntity {
   name: string; // Changed from String to string
   logo_fileid?: string; // Nullable string, consistent with Prisma model
   description?: string; // Nullable string

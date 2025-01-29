@@ -4,7 +4,17 @@ const prisma = new PrismaClient();
 
 async function main() {
   const roles = await prisma.role.createMany({
-    data: [{ name: 'admin' }, { name: 'user' }],
+    data: [
+      { name: 'admin' },
+      { name: 'user' },
+      { name: 'coach' },
+      { name: 'assistant_coach' },
+      { name: 'active_member' },
+      { name: 'board_member' },
+      { name: 'alumni' },
+      { name: 'partner' },
+      { name: 'contact_person' },
+    ],
     skipDuplicates: true, // Skip if roles already exist
   });
 

@@ -1,24 +1,22 @@
 import { Request, Response } from 'express';
-import {
-  getAllKBClients,
-  getKBClientById,
-  createKBClient,
-  updateKBClient,
-  deleteKBClient,
-} from '../services/kbClientService';
-import { KBClientSubmitModel } from '../models/submitModel/kbClientSubmitModel';
 import { sendErrorResponse } from '../utils/errorHandler';
 import { ERROR_CODES, ERROR_MESSAGES } from '../constants/errorMessages';
-import { KBClientEntity } from '../models/entity/kbClienEntity';
+import {
+  createSocialMedia,
+  deleteSocialMedia,
+  getAllSocialMedia,
+  getSocialMediaById,
+  updateSocialMedia,
+} from '../services/socialMediaService';
 import { uploadFileToS3 } from '../utils/fileUpload';
 import { FileStorageEntity } from '../models/entity/fileStorageEntity';
 import { createFileStorage } from '../services/fileStorageService';
-const formidable = require('formidable');
+import { SocialMediaEntity } from '../models/entity/SocialMediaEntity';
 
 export const getAll = async (req: Request, res: Response): Promise<void> => {
   try {
     const search = req.query.search?.toString();
-    const clients = await getAllKBClients(search);
+    const clients = await getAllSocialMedia(search);
     res.json(clients);
   } catch (error) {
     sendErrorResponse(
@@ -33,9 +31,9 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
 export const getById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const clientId = parseInt(id);
+    const socialMediaId = parseInt(id);
 
-    if (isNaN(clientId)) {
+    if (isNaN(socialMediaId)) {
       sendErrorResponse(
         res,
         400,
@@ -45,8 +43,8 @@ export const getById = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const client = await getKBClientById(clientId);
-    if (!client) {
+    const socialMedia = await getSocialMediaById(socialMediaId);
+    if (!socialMedia) {
       sendErrorResponse(
         res,
         404,
@@ -56,7 +54,7 @@ export const getById = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    res.json(client);
+    res.json(socialMedia);
   } catch (error) {
     sendErrorResponse(
       res,
@@ -69,20 +67,8 @@ export const getById = async (req: Request, res: Response): Promise<void> => {
 
 export const create = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, description, website, contact_email, phone_number } =
-      req.body;
+    const { name, url } = req.body;
     const file = req.file;
-
-    //Optional if image for client is required
-    if (!file) {
-      sendErrorResponse(
-        res,
-        400,
-        ERROR_CODES.INVALID_REQUEST,
-        ERROR_MESSAGES.INVALID_REQUEST
-      );
-      return;
-    }
 
     // Validate if data is not null
     if (!req.body) {
@@ -95,38 +81,38 @@ export const create = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Save into AWS S3
-    const fileKey = await uploadFileToS3(file);
+    let uploadedFile;
+    if (file) {
+      // Save into AWS S3
+      const fileKey = await uploadFileToS3(file);
 
-    //Save into File Storage table
-    //Get the id
-    const fileStorageModel: FileStorageEntity = {
-      file_type: file.mimetype,
-      file_size: file.size,
-      file_name: file.originalname,
-      file_key: fileKey,
-    };
-    const uploadedFile = await createFileStorage(fileStorageModel);
+      //Save into File Storage table
+      //Get the id
+      const fileStorageModel = {
+        file_type: file.mimetype,
+        file_size: file.size,
+        file_name: file.originalname,
+        file_key: fileKey,
+      };
 
-    if (!uploadedFile) {
-      sendErrorResponse(
-        res,
-        500,
-        ERROR_CODES.CREATE_ERROR,
-        ERROR_MESSAGES.CREATE_ERROR
-      );
-      return;
+      uploadedFile = await createFileStorage(fileStorageModel);
+      if (!uploadedFile) {
+        sendErrorResponse(
+          res,
+          500,
+          ERROR_CODES.CREATE_ERROR,
+          ERROR_MESSAGES.CREATE_ERROR
+        );
+        return;
+      }
     }
 
-    const model: KBClientEntity = {
+    const model: SocialMediaEntity = {
       name,
-      logo_fileid: uploadedFile.fileid,
-      description,
-      website,
-      contact_email,
-      phone_number,
+      url,
+      logo_fileid: uploadedFile?.fileid,
     };
-    const client = await createKBClient(model);
+    const client = await createSocialMedia(model);
 
     res.status(201).json(client);
   } catch (error) {
@@ -141,10 +127,11 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 
 export const update = async (req: Request, res: Response): Promise<void> => {
   try {
-    const reqBody: KBClientSubmitModel = req.body;
-    const clientId: number = parseInt(req.params.id);
+    const { name, url } = req.body;
+    const file = req.file;
+    const socialMediaId: number = parseInt(req.params.id);
 
-    if (isNaN(clientId)) {
+    if (isNaN(socialMediaId)) {
       sendErrorResponse(
         res,
         400,
@@ -154,7 +141,38 @@ export const update = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const updateResult = await updateKBClient(clientId, reqBody);
+    let uploadedFile;
+    if (file) {
+      // Save into AWS S3
+      const fileKey = await uploadFileToS3(file);
+
+      //Save into File Storage table
+      //Get the id
+      const fileStorageModel = {
+        file_type: file.mimetype,
+        file_size: file.size,
+        file_name: file.originalname,
+        file_key: fileKey,
+      };
+
+      uploadedFile = await createFileStorage(fileStorageModel);
+      if (!uploadedFile) {
+        sendErrorResponse(
+          res,
+          500,
+          ERROR_CODES.CREATE_ERROR,
+          ERROR_MESSAGES.CREATE_ERROR
+        );
+        return;
+      }
+    }
+
+    const model: SocialMediaEntity = {
+      name,
+      url,
+      logo_fileid: uploadedFile?.fileid,
+    };
+    const updateResult = await updateSocialMedia(socialMediaId, model);
     res.status(200).json(updateResult);
   } catch (error) {
     sendErrorResponse(
@@ -171,8 +189,8 @@ export const deleteData = async (
   res: Response
 ): Promise<void> => {
   try {
-    const clientId = parseInt(req.params.id);
-    const deleteResult = await deleteKBClient(clientId);
+    const socialMediaId = parseInt(req.params.id);
+    const deleteResult = await deleteSocialMedia(socialMediaId);
 
     res.json(deleteResult);
   } catch (error) {

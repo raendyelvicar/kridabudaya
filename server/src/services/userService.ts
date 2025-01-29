@@ -1,13 +1,9 @@
 import { PrismaClient } from '@prisma/client';
+import { UserEntity } from '../models/entity/userEntity';
 
 const prisma = new PrismaClient();
 
-export const createUser = async (data: {
-  username: string;
-  password: string;
-  roleId: number;
-  refreshToken: string;
-}) => {
+export const createUser = async (data: UserEntity) => {
   return await prisma.user.create({ data });
 };
 

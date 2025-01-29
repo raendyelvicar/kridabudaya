@@ -38,8 +38,8 @@ export const register = async (req: Request, res: Response) => {
     const user = await createUser({
       username: username,
       password: hashedPassword,
-      roleId: role.id,
-      refreshToken: '',
+      role_id: role.id,
+      refresh_token: '',
     });
 
     res.status(201).json({ message: 'User registered successfully', user });
@@ -95,7 +95,7 @@ export const login = async (req: Request, res: Response) => {
     //update current user with refresh token
     await prisma.user.update({
       data: {
-        refreshToken: refreshToken,
+        refresh_token: refreshToken,
       },
       where: {
         id: user.id,
@@ -163,7 +163,7 @@ export const getRefreshToken = async (req: Request, res: Response) => {
 
     // Find user with the provided refresh token
     const foundUser = await prisma.user.findFirst({
-      where: { refreshToken },
+      where: { refresh_token: refreshToken },
       include: { role: true },
     });
 
