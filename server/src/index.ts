@@ -10,6 +10,7 @@ import kbClientRoutes from './routes/kbClientRoutes';
 import fileStorageRoutes from './routes/fileStorageRoutes';
 import socialMediaRoutes from './routes/socialMediaRoutes';
 import teamMemberRoutes from './routes/teamMemberRoutes';
+import catalogRoutes from './routes/catalogRoutes';
 import authRoutes from './routes/authRoutes';
 import { authorizeRole } from './middleware/authorizeRole';
 
@@ -31,6 +32,7 @@ app.use('/api/clients', authorizeRole(['admin']), kbClientRoutes); // http://loc
 app.use('/api/files', authorizeRole(['admin']), fileStorageRoutes); // http://localhost:3001/api/files
 app.use('/api/social-media', authorizeRole(['admin']), socialMediaRoutes); // http://localhost:3001/api/social-media
 app.use('/api/team-member', authorizeRole(['admin']), teamMemberRoutes); // http://localhost:3001/api/team-member
+app.use('/api/catalog', authorizeRole(['admin']), catalogRoutes); // http://localhost:3001/api/catalog
 
 /* SERVER */
 const port = Number(process.env.PORT) || 3001;

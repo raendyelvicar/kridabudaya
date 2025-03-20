@@ -133,7 +133,7 @@ model FileStorage {
   team_members     TeamMember[] // Linked to TeamMember (profile picture)
   clients          KBClient[] // Linked to Client (logo)
   gallery_items    GalleryItem[] // Linked to GalleryItem
-  portfolio_assets PortfolioAsset[] // Linked to PortfolioAsset
+  portfolio_assets CatalogAsset[] // Linked to CatalogAsset
   banners          Banner[] // Linked to Banner (image)
   testimonials     Testimonial[] // Linked to Testimonial (profile picture)
   services         Service[] // Linked to Service (logo)
@@ -233,36 +233,38 @@ model FAQ {
   @@map("faqs")
 }
 
-model PortfolioAsset {
-  file_id      String // Foreign key to File model for portfolio file
-  portfolio_id Int // Foreign key to Portfolio model @unique @unique @unique @unique
+model CatalogAsset {
+  file_id    String // Foreign key to File model for portfolio file
+  catalog_id Int // Foreign key to Portfolio model @unique
 
-  file      FileStorage? @relation(fields: [file_id], references: [fileid])
-  portfolio Portfolio?   @relation(fields: [portfolio_id], references: [id])
+  file    FileStorage? @relation(fields: [file_id], references: [fileid])
+  catalog Catalog?     @relation(fields: [catalog_id], references: [id])
 
-  @@id([file_id, portfolio_id])
-  @@map("portfolio_assets")
+  @@id([file_id, catalog_id])
+  @@map("catalog_assets")
 }
 
-model Portfolio {
-  id             Int     @id @default(autoincrement()) // Primary key
+model Catalog {
+  id             Int      @id @default(autoincrement()) // Primary key
   title          String // Portfolio title
   synopsis       String? // Brief description of the portfolio
   choreographer  String? // Choreographer name
   music_director String? // Music director name
   province_id    Int? // Foreign key to Province model
+  created_at     DateTime @default(now()) // Timestamp for creation
+  updated_at     DateTime @updatedAt // Automatically updates on modification
 
-  province         Province?        @relation(fields: [province_id], references: [id])
-  portfolio_assets PortfolioAsset[]
+  province       Province?      @relation(fields: [province_id], references: [id])
+  catalog_assets CatalogAsset[]
 
-  @@map("portfolios")
+  @@map("catalogs")
 }
 
 model Province {
-  id         Int         @id @default(autoincrement())
-  name       String
-  state      String
-  portfolios Portfolio[]
+  id       Int       @id @default(autoincrement())
+  name     String
+  state    String
+  catalogs Catalog[]
 
   @@map("provinces")
 }
