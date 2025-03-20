@@ -9,7 +9,7 @@ import {
 import { KBClientSubmitModel } from '../models/submitModel/kbClientSubmitModel';
 import { sendErrorResponse } from '../utils/errorHandler';
 import { ERROR_CODES, ERROR_MESSAGES } from '../constants/errorMessages';
-import { KBClientEntity } from '../models/entity/kbClienEntity';
+import { KBClientEntity } from '../models/entity/kbClientEntity';
 import { uploadFileToS3 } from '../utils/fileUpload';
 import { FileStorageEntity } from '../models/entity/fileStorageEntity';
 import { createFileStorage } from '../services/fileStorageService';

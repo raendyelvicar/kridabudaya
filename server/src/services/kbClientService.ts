@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { KBClientSubmitModel } from '../models/submitModel/kbClientSubmitModel';
-import { KBClientEntity } from '../models/entity/kbClienEntity';
+import { KBClientEntity } from '../models/entity/kbClientEntity';
 
 const prisma = new PrismaClient();
 
