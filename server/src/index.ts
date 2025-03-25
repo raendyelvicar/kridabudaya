@@ -30,9 +30,9 @@ app.use(cors());
 app.use('/api/auth', authRoutes);
 app.use('/api/clients', authorizeRole(['admin']), kbClientRoutes); // http://localhost:3001/api/clients
 app.use('/api/files', authorizeRole(['admin']), fileStorageRoutes); // http://localhost:3001/api/files
-app.use('/api/social-media', authorizeRole(['admin']), socialMediaRoutes); // http://localhost:3001/api/social-media
-app.use('/api/team-member', authorizeRole(['admin']), teamMemberRoutes); // http://localhost:3001/api/team-member
-app.use('/api/catalog', authorizeRole(['admin']), catalogRoutes); // http://localhost:3001/api/catalog
+app.use('/api/social-medias', authorizeRole(['admin']), socialMediaRoutes); // http://localhost:3001/api/social-medias
+app.use('/api/team-members', authorizeRole(['admin']), teamMemberRoutes); // http://localhost:3001/api/team-members
+app.use('/api/catalogs', authorizeRole(['admin']), catalogRoutes); // http://localhost:3001/api/catalogs
 
 /* SERVER */
 const port = Number(process.env.PORT) || 3001;

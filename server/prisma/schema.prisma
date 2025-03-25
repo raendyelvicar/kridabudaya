@@ -108,9 +108,49 @@ model Service {
   @@map("services")
 }
 
+model Achievement {
+  id          Int      @id @default(autoincrement()) // Primary key
+  title       String // Achievement name
+  description String? // Achievement description
+  year        Int? //Achievement file
+  location    String? //Achievement location
+  created_at  DateTime @default(now()) // Timestamp for creation
+  updated_at  DateTime @updatedAt // Automatically updates on modification
+
+  @@map("achievements")
+}
+
+model Portfolio {
+  id             Int       @id @default(autoincrement()) // Primary key
+  title          String // Achievement name
+  description    String? // Achievement description
+  location       String? //Achievement location
+  portfolio_date DateTime?
+  created_at     DateTime  @default(now()) // Timestamp for creation
+  updated_at     DateTime  @updatedAt // Automatically updates on modification
+
+  portfolio_assets PortfolioAsset[]
+
+  @@map("portfolios")
+}
+
+model PortfolioAsset {
+  file_id      String // Foreign key to File model for catalog file
+  portfolio_id Int // Foreign key to Portfolio model @unique
+
+  file      FileStorage? @relation(fields: [file_id], references: [fileid])
+  portfolio Portfolio?   @relation(fields: [portfolio_id], references: [id])
+
+  @@id([file_id, portfolio_id])
+  @@map("portfolio_assets")
+}
+
 model Banner {
   id            Int      @id @default(autoincrement()) // Primary key
-  name          String // Banner name
+  title         String // Banner title
+  subtitle      String //Banner subtitle
+  order_number  Int
+  is_publish    Boolean
   banner_fileid String // Foreign key to File model for the banner image
   created_at    DateTime @default(now()) // Timestamp for creation
   updated_at    DateTime @updatedAt // Automatically updates on modification
@@ -133,11 +173,12 @@ model FileStorage {
   team_members     TeamMember[] // Linked to TeamMember (profile picture)
   clients          KBClient[] // Linked to Client (logo)
   gallery_items    GalleryItem[] // Linked to GalleryItem
-  portfolio_assets CatalogAsset[] // Linked to CatalogAsset
+  catalog_assets   CatalogAsset[] // Linked to CatalogAsset
   banners          Banner[] // Linked to Banner (image)
   testimonials     Testimonial[] // Linked to Testimonial (profile picture)
   services         Service[] // Linked to Service (logo)
   social_medias    SocialMedia[]
+  portfolio_assets PortfolioAsset[]
 
   @@map("file_storages")
 }
@@ -234,7 +275,7 @@ model FAQ {
 }
 
 model CatalogAsset {
-  file_id    String // Foreign key to File model for portfolio file
+  file_id    String // Foreign key to File model for catalog file
   catalog_id Int // Foreign key to Portfolio model @unique
 
   file    FileStorage? @relation(fields: [file_id], references: [fileid])
@@ -247,7 +288,7 @@ model CatalogAsset {
 model Catalog {
   id             Int      @id @default(autoincrement()) // Primary key
   title          String // Portfolio title
-  synopsis       String? // Brief description of the portfolio
+  synopsis       String? // Brief description of the catalog
   choreographer  String? // Choreographer name
   music_director String? // Music director name
   province_id    Int? // Foreign key to Province model
